@@ -96,7 +96,7 @@ function BasketBadge(props) {
           })}
           <TableRow>
             <TableCell align="left">
-              Total Price: {linq.from(basket).sum(item => item.sum)}
+              Total Price: ${linq.from(basket).sum(item => item.sum)}
             </TableCell>
           </TableRow>
         </TableBody>

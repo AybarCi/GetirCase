@@ -13,6 +13,7 @@ function TagCheckList(props) {
   const [tags, setTags] = useState([]);
   const [query, setQuery] = React.useState("");
   const [autoFocusStatus, setAutoFocusStatus] = React.useState(false);
+  const [products, setProducts] = useState([]);
 
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
@@ -24,13 +25,15 @@ function TagCheckList(props) {
       newChecked.splice(currentIndex, 1);
     }
     setChecked(newChecked);
-    
-    let storageProductList = [];
     let newList = [];
-    storageProductList = linq.from(JSON.parse(localStorage.getItem("@products"))).toArray();
-    console.log("newChecked: ",newChecked)
-    newList = linq.from(storageProductList).where(x => Enumerable.from(newChecked).select(element => element).contains(Enumerable.from(x.tags).select(y => y))).take(15).toArray();
-    console.log("newList: ",newList);
+    if (Enumerable.from(newChecked).toArray().length > 1) {
+      newList = linq.from(JSON.parse(localStorage.getItem("@products"))).where(
+        x => Enumerable.from(newChecked).select(element => element).contains(Enumerable.from(x.tags).forEach(y => y))).toArray();
+    } else {
+      newList = linq.from(JSON.parse(localStorage.getItem("@products"))).toArray();
+    }
+    console.log("newchecked: ", Enumerable.from(newChecked).toArray().length);
+    console.log("brand tarafinda checkledim",products);
     props.onRefreshUsageProducts(newList);
   };
   const handleChange = (event) => {
@@ -38,25 +41,46 @@ function TagCheckList(props) {
     if (event.target.value === null || event.target.value === "") {
       linq.from(items).forEach(item => {
         linq.from(item.tags).forEach( tag =>{
-            tagList.push(tag);
+            list.push(tag);
         })});
+        console.log("list: ",list);
+        tagList = linq.from(list).groupBy(
+            g => g, 
+            element => element, 
+            (key, items) => ({key, items: items.toArray(), count: items.toArray().length})).toArray();
         setTags(tagList);
     } else {
-      const filteredData = tags.filter(x => x.toLowerCase().includes(formattedQuery));
+      const filteredData = tags.filter(x => x.key.toLowerCase().includes(formattedQuery));
       console.log("filteredData: ",filteredData)
       setTags(filteredData);
     }
     setQuery(event.target.value);
   }
+  let list = [];
   let tagList = [];
+  let id = 0;
   useEffect(() => {
     if (!isLoaded) {
       setIsLoaded(true);
       linq.from(items).forEach(item => {
         linq.from(item.tags).forEach( tag =>{
-            tagList.push(tag);
+            list.push(tag);
         })});
+        console.log("list: ",list);
+        tagList = linq.from(list).groupBy(
+            g => g, 
+            element => element, 
+            (key, items) => ({key, items: items.toArray(), count: items.toArray().length})).toArray();
+        console.log("tagList: ",tagList);
         setTags(tagList);
+    }
+    if (props.refresh === true) {
+      setProducts(props.products);
+    }
+    if (props.loaded === true) {
+      props.onGetProductsReset();
+      console.log('buraya geliyor mu')
+      setProducts(props.products);
     }
   }, [isLoaded, tagList])
   
@@ -77,11 +101,11 @@ function TagCheckList(props) {
     <Table stickyHeader aria-label="sticky table">
       <TableBody>
         {
-          linq.from(tags).distinct().toArray().map((tag) =>{
+          tags.map((tag) =>{
           const labelId = `checkbox-list-label-${tag}`;
                       return (
-                        <TableRow hover key={tag} role="checkbox" tabIndex={-1} onClick={handleToggle(tag)}>
-                          <TableCell>
+                        <TableRow hover key={id = tag+(id + 1)} role="checkbox" tabIndex={-1} onClick={handleToggle(tag)}>
+                          <TableCell sx={{maxWidth: 15}}>
                             <Checkbox
                               color="secondary"
                               edge="start"
@@ -92,7 +116,7 @@ function TagCheckList(props) {
                             />
                           </TableCell>
                             <TableCell>
-                              {tag}
+                              {tag.key} ({tag.count})
                             </TableCell>
                         </TableRow>
                       );}       
@@ -108,12 +132,16 @@ const mapStateToProps = (state) => {
     errors: state.product.errors,
     loading: state.product.loading,
     products: state.product.products,
+    refresh: state.product.refresh,
+    loaded: state.product.loaded,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     onRefreshUsageProducts: (products) => dispatch(productActions.refreshUsageProducts(products)),
+    onRefreshUsageProductsReset: () => dispatch(productActions.refreshUsageProductsReset()),
+    onGetProductsReset: () => dispatch(productActions.getProductsReset())
   };
 };
 

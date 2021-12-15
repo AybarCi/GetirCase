@@ -62,7 +62,6 @@ function BrandCheckList(props) {
       setProducts(props.products);
     }
     if (props.loaded === true) {
-      props.onGetProductsReset();
       console.log('buraya geliyor mu')
       setProducts(props.products);
     }
@@ -88,7 +87,7 @@ function BrandCheckList(props) {
             const labelId = `checkbox-list-label-${company.account}`;
             return (
                     <TableRow hover key={company.name} role="checkbox" tabIndex={-1} onClick={handleToggle(company)}>
-                      <TableCell>
+                      <TableCell sx={{maxWidth: 15}}>
                         <Checkbox
                           color="secondary"
                           edge="start"
