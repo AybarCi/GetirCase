@@ -20,7 +20,6 @@ const ProductList = (props) => {
   const _DATA = usePagination(products, PER_PAGE);
 
   const handleChange = (e, p) => {
-    console.log("p: ", p);
     setPage(p);
     _DATA.jump(p);
   };
@@ -45,7 +44,6 @@ const ProductList = (props) => {
       setProducts(props.products);
     }
     if (props.loaded === true) {
-      console.log('loaded sonrasi')
       setProducts(props.products);
     }
   }, [products.length, props])

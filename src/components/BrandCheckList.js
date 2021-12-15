@@ -32,8 +32,6 @@ function BrandCheckList(props) {
     } else {
       newList = linq.from(JSON.parse(localStorage.getItem("@products"))).toArray();
     }
-    console.log("newchecked: ", Enumerable.from(newChecked).toArray().length);
-    console.log("brand tarafinda checkledim",products);
     props.onRefreshUsageProducts(newList);
   };
 
@@ -43,7 +41,6 @@ function BrandCheckList(props) {
       setCompanyList(linq.from(companies).toArray());
     } else {
       const filteredData = companyList.filter(x => x.name.toLowerCase().includes(formattedQuery));
-      console.log("filteredData: ",filteredData)
       setCompanyList(filteredData);
     }
     setQuery(event.target.value);
@@ -62,7 +59,6 @@ function BrandCheckList(props) {
       setProducts(props.products);
     }
     if (props.loaded === true) {
-      console.log('buraya geliyor mu')
       setProducts(props.products);
     }
   }, [isLoaded, props])

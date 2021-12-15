@@ -32,8 +32,6 @@ function TagCheckList(props) {
     } else {
       newList = linq.from(JSON.parse(localStorage.getItem("@products"))).toArray();
     }
-    console.log("newchecked: ", Enumerable.from(newChecked).toArray().length);
-    console.log("brand tarafinda checkledim",products);
     props.onRefreshUsageProducts(newList);
   };
   const handleChange = (event) => {
@@ -43,7 +41,6 @@ function TagCheckList(props) {
         linq.from(item.tags).forEach( tag =>{
             list.push(tag);
         })});
-        console.log("list: ",list);
         tagList = linq.from(list).groupBy(
             g => g, 
             element => element, 
@@ -51,7 +48,6 @@ function TagCheckList(props) {
         setTags(tagList);
     } else {
       const filteredData = tags.filter(x => x.key.toLowerCase().includes(formattedQuery));
-      console.log("filteredData: ",filteredData)
       setTags(filteredData);
     }
     setQuery(event.target.value);
@@ -66,12 +62,10 @@ function TagCheckList(props) {
         linq.from(item.tags).forEach( tag =>{
             list.push(tag);
         })});
-        console.log("list: ",list);
         tagList = linq.from(list).groupBy(
             g => g, 
             element => element, 
             (key, items) => ({key, items: items.toArray(), count: items.toArray().length})).toArray();
-        console.log("tagList: ",tagList);
         setTags(tagList);
     }
     if (props.refresh === true) {
@@ -79,7 +73,6 @@ function TagCheckList(props) {
     }
     if (props.loaded === true) {
       props.onGetProductsReset();
-      console.log('buraya geliyor mu')
       setProducts(props.products);
     }
   }, [isLoaded, tagList])

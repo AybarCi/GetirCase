@@ -23,7 +23,6 @@ const Home = (props) => {
       newList = linq.from(JSON.parse(localStorage.getItem("@products"))).where(element => element.itemType === text).toArray();
     }
     
-    console.log("newList: ", newList)
     props.onRefreshUsageProducts(newList);
   }
   function handleSortingChanged (event, text) {
@@ -50,7 +49,6 @@ const Home = (props) => {
       setProducts(props.products);
     }
     if (props.loaded === true) {
-      console.log('buraya geliyor mu')
       setProducts(props.products);
     }
   }, [isLoaded, props])

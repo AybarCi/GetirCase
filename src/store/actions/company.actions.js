@@ -14,7 +14,6 @@ export const getCompanies = () => {
       .then((res) => res.json())
       .then(
         (response) => {
-          console.log('companies data: ',response);
           dispatch(getCompaniesSuccess(response));
         },
         (err) => {
