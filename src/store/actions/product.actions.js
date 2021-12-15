@@ -16,9 +16,17 @@ export const getProductsStart = () => {
 };
 
 export const getProductsSuccess = (products) => {
+  console.log('hooopp', products)
   return {
     type: actionTypes.GET_PRODUCTS_SUCCESS,
     products: products,
+    loaded: true,
+  };
+};
+export const getProductsReset = () => {
+  return {
+    type: actionTypes.GET_PRODUCTS_RESET,
+    loaded: false,
   };
 };
 export const refreshUsageProducts = (products) => {

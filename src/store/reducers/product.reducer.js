@@ -4,6 +4,8 @@ import { updateObject } from "../../utils/utility";
 const initialState = {
   loading: false,
   products: null,
+  refresh: false,
+  loaded: false,
 };
 
 const getProductsStart = (state, action) => {
@@ -16,6 +18,12 @@ const getProductsSuccess = (state, action) => {
   return updateObject(state, {
     products: action.products,
     loading: false,
+    loaded: action.loaded,
+  });
+};
+const getProductsReset = (state, action) => {
+  return updateObject(state, {
+    loaded: action.loaded,
   });
 };
 const refreshUsageProducts = (state, action) => {
@@ -39,6 +47,8 @@ const reducer = (state = initialState, action) => {
       return getProductsStart(state, action);
     case actionTypes.GET_PRODUCTS_SUCCESS:
       return getProductsSuccess(state, action);
+    case actionTypes.GET_PRODUCTS_RESET:
+      return getProductsReset(state, action);
     case actionTypes.REFRESH_USAGE_PRODUCTS:
       return refreshUsageProducts(state, action);
     case actionTypes.REFRESH_USAGE_PRODUCTS_RESET:

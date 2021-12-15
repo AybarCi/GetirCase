@@ -37,11 +37,15 @@ const ProductList = (props) => {
     props.onRefreshBasket(basketList);
   }
   useEffect(() => {
-    if (products.length === 0) {
+    /* if (products.length === 0) {
       setProducts(linq.from(JSON.parse(localStorage.getItem("@products"))).toArray())
-    }
+    } */
     if (props.refresh === true) {
-      props.onRefreshUsageProductsReset();
+      //props.onRefreshUsageProductsReset();
+      setProducts(props.products);
+    }
+    if (props.loaded === true) {
+      console.log('loaded sonrasi')
       setProducts(props.products);
     }
   }, [products.length, props])
@@ -73,11 +77,14 @@ const mapStateToProps = (state) => {
     basket: state.basket.basket,
     products: state.product.products,
     refresh: state.product.refresh,
+    loaded: state.product.loaded,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    onGetProducts: () => dispatch(productActions.getProducts()),
+    onGetProductsReset: () => dispatch(productActions.getProductsReset()),
     onRefreshBasket: (basket) => dispatch(basketActions.refreshBasket(basket)),
     onRefreshUsageProductsReset: () => dispatch(productActions.refreshUsageProductsReset()),
   };

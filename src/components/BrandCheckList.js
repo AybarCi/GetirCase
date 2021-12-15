@@ -13,6 +13,7 @@ function BrandCheckList(props) {
   const [autoFocusStatus, setAutoFocusStatus] = React.useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [companyList, setCompanyList] = useState([]);
+  const [products, setProducts] = useState([]);
   
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
@@ -24,12 +25,15 @@ function BrandCheckList(props) {
       newChecked.splice(currentIndex, 1);
     }
     setChecked(newChecked);
-    console.log("newchecked: ", newChecked);
-
-    let storageProductList = [];
+    
     let newList = [];
-    storageProductList = linq.from(props.products).toArray();
-    newList = linq.from(storageProductList).where(x => Enumerable.from(newChecked).select(element => element.slug).contains(x.manufacturer)).toArray();
+    if (Enumerable.from(newChecked).toArray().length > 1) {
+      newList = linq.from(JSON.parse(localStorage.getItem("@products"))).where(x => Enumerable.from(newChecked).select(element => element.slug).contains(x.manufacturer)).toArray();  
+    } else {
+      newList = linq.from(JSON.parse(localStorage.getItem("@products"))).toArray();
+    }
+    console.log("newchecked: ", Enumerable.from(newChecked).toArray().length);
+    console.log("brand tarafinda checkledim",products);
     props.onRefreshUsageProducts(newList);
   };
 
@@ -54,7 +58,15 @@ function BrandCheckList(props) {
                       (company, items) => ({...company, items: items.toArray(), count: items.toArray().length})
                     ).toArray());
     }
-  }, [isLoaded])
+    if (props.refresh === true) {
+      setProducts(props.products);
+    }
+    if (props.loaded === true) {
+      props.onGetProductsReset();
+      console.log('buraya geliyor mu')
+      setProducts(props.products);
+    }
+  }, [isLoaded, props])
   return (
     <TableContainer sx={{ maxHeight: 240 }}>
       <TextField
@@ -103,12 +115,16 @@ const mapStateToProps = (state) => {
     errors: state.product.errors,
     loading: state.product.loading,
     products: state.product.products,
+    refresh: state.product.refresh,
+    loaded: state.product.loaded,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     onRefreshUsageProducts: (products) => dispatch(productActions.refreshUsageProducts(products)),
+    onRefreshUsageProductsReset: () => dispatch(productActions.refreshUsageProductsReset()),
+    onGetProductsReset: () => dispatch(productActions.getProductsReset())
   };
 };
 

@@ -13,33 +13,30 @@ import linq from 'linq';
 
 const Home = (props) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [products, setProducts] = useState([]);
   
   function handleItemTypeChanged (event, text) {
-    let storageProductList = [];
     let newList = [];
-    storageProductList = linq.from(JSON.parse(localStorage.getItem("@products"))).toArray();
-    newList = linq.from(storageProductList).where(element => element.itemType === text).toArray();
+    if (text === "all") {
+      newList = linq.from(JSON.parse(localStorage.getItem("@products"))).toArray();
+    } else {
+      newList = linq.from(JSON.parse(localStorage.getItem("@products"))).where(element => element.itemType === text).toArray();
+    }
+    
+    console.log("newList: ", newList)
     props.onRefreshUsageProducts(newList);
   }
   function handleSortingChanged (event, text) {
-    let storageProductList = [];
+    //let storageProductList = [];
     let newList = [];
     if (text === "lowtohigh") {
-      console.log("lowtohigh");
-      storageProductList = linq.from(JSON.parse(localStorage.getItem("@products"))).toArray();
-      newList = linq.from(storageProductList).orderBy(element => element.price).toArray();    
+      newList = linq.from(products).orderBy(element => element.price).toArray();    
     } else if (text === "hightolow") {
-      console.log("hightolow");
-      storageProductList = linq.from(JSON.parse(localStorage.getItem("@products"))).toArray();
-      newList = linq.from(storageProductList).orderByDescending(element => element.price).toArray();
+      newList = linq.from(products).orderByDescending(element => element.price).toArray();
     } else if (text === "newtoold") {
-      console.log("newtoold");
-      storageProductList = linq.from(JSON.parse(localStorage.getItem("@products"))).toArray();
-      newList = linq.from(storageProductList).orderByDescending(element => element.added).toArray();
+      newList = linq.from(products).orderByDescending(element => element.added).toArray();
     } else if (text === "oldtonew") {
-      console.log("oldtonew");
-      storageProductList = linq.from(JSON.parse(localStorage.getItem("@products"))).toArray();
-      newList = linq.from(storageProductList).orderBy(element => element.added).toArray();
+      newList = linq.from(products).orderBy(element => element.added).toArray();
     }
     props.onRefreshUsageProducts(newList);
   }
@@ -48,6 +45,13 @@ const Home = (props) => {
     if (!isLoaded) {
       props.onGetProducts();
       setIsLoaded(true);
+    }
+    if (props.refresh === true) {
+      setProducts(props.products);
+    }
+    if (props.loaded === true) {
+      console.log('buraya geliyor mu')
+      setProducts(props.products);
     }
   }, [isLoaded, props])
   return (
@@ -111,6 +115,7 @@ const Home = (props) => {
                     <ButtonGroup variant="outlined" color="secondary" aria-label="outlined button group">
                       <Button onClick={(e) => handleItemTypeChanged(e, "mug")}>Mug</Button>
                       <Button onClick={(e) => handleItemTypeChanged(e, "shirt")}>Shirt</Button>
+                      <Button onClick={(e) => handleItemTypeChanged(e, "all")}>All</Button>
                     </ButtonGroup>
                   </CButtonGroup> 
                 </CRow>
@@ -132,6 +137,8 @@ const mapStateToProps = (state) => {
     errors: state.product.errors,
     loading: state.product.loading,
     products: state.product.products,
+    refresh: state.product.refresh,
+    loaded: state.product.loaded,
   };
 };
 
